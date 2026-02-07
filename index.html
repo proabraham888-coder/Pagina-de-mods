@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mods de Minecraft - RPG Neon Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Video de fondo */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.25; /* Ajusta opacidad para que no opaque el contenido */
+        }
+
+        /* Overlay oscuro para mejorar legibilidad */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 20, 0.75);
+            z-index: -1;
+        }
+
+        /* Luces RPG en bordes */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            border: 4px solid transparent;
+            border-image: linear-gradient(45deg, #00ffea, #ff00ff, #00ffea) 1;
+            animation: borderPulse 6s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { border-image-source: linear-gradient(45deg, #00ffea, #ff00ff, #00ffea); opacity: 0.7; }
+            50% { border-image-source: linear-gradient(45deg, #ff00ff, #00ffea, #ff00ff); opacity: 1; }
+        }
+
+        /* Menú lateral */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: rgba(20, 20, 30, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 80px 20px 20px;
+            transition: left 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            box-shadow: 5px 0 25px rgba(0, 255, 234, 0.4);
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin: 25px 0;
+        }
+
+        .sidebar a {
+            color: #00ffea;
+            text-decoration: none;
+            font-size: 1.3em;
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .sidebar a:hover {
+            color: #ff00ff;
+            transform: translateX(10px);
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        /* Botón menú */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(45deg, #00ffea, #0099ff);
+            color: #000;
+            border: none;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            z-index: 1100;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 234, 0.6);
+        }
+
+        .menu-toggle:hover {
+            background: linear-gradient(45deg, #ff00ff, #ff3399);
+            transform: scale(1.08);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.7);
+        }
+
+        /* Contenido principal */
+        main {
+            padding: 80px 20px 40px;
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        section {
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            padding: 30px;
+            background: rgba(30, 30, 50, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 255, 234, 0.3);
+            backdrop-filter: blur(6px);
+            margin-bottom: 40px;
+        }
+
+        section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1, h2 {
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            color: #00ffea;
+            text-shadow: 0 0 20px #00ffea, 0 0 40px #0099ff;
+        }
+
+        h2 {
+            font-size: 2em;
+            color: #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+
+        p {
+            font-size: 1.15em;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        /* Tarjetas */
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: rgba(20, 20, 40, 0.7);
+            border: 2px solid #00ffea;
+            border-radius: 12px;
+            padding: 20px;
+            width: 320px;
+            text-align: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 234, 0.4);
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.04);
+            box-shadow: 0 0 35px rgba(0, 255, 234, 0.7);
+            border-color: #ff00ff;
+        }
+
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: #222;
+        }
+
+        .card p {
+            font-size: 1.3em;
+            color: #ff00ff;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 240px; left: -240px; }
+            .menu-toggle { top: 15px; left: 15px; padding: 10px 14px; font-size: 0.8em; }
+            main { padding: 70px 15px 30px; }
+            h1 { font-size: 2.2em; }
+            .card { width: 100%; max-width: 360px; }
+        }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop playsinline id="bg-video">
+        <!-- Puedes reemplazar esta URL con tu video o uno de los sitios encontrados (Vecteezy, Pixabay, YouTube → descargar) -->
+        <!-- Ejemplo placeholder: cyberpunk neon loop -->
+        <source src="https://files.catbox.moe/ghaf0f.mp4" type="video/mp4">
+        <!-- Alternativa recomendada (descarga uno gratuito de vecteezy o pixabay y súbelo): -->
+        <!-- <source src="TU_VIDEO_CYBERPUNK_NEON_LOOP.mp4" type="video/mp4"> -->
+        Tu navegador no soporta video de fondo.
+    </video>
+
+    <div class="overlay"></div>
+
+    <button class="menu-toggle" onclick="toggleMenu()">MENÚ</button>
+
+    <nav class="sidebar" id="sidebar">
+        <ul>
+            <li><a href="#" onclick="showSection('inicio'); return false;">Inicio</a></li>
+            <li><a href="#" onclick="showSection('mods'); return false;">Mods</a></li>
+            <li><a href="#" onclick="showSection('contacto'); return false;">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="inicio" class="active">
+            <h1>¡Mods RPG para Minecraft!</h1>
+            <p>Plataforma creada en 2024 para la comunidad hispanohablante.</p>
+            <p><strong>Todos los mods son 100% seguros</strong>, libres de virus y verificados manualmente antes de publicarse.</p>
+            <p>Buscamos llevar la experiencia de Minecraft a otro nivel con mods de estilo RPG, aventuras épicas, sistemas de clases, misiones, bosses y mucho más. Únete a miles de jugadores que ya mejoraron su juego con nosotros.</p>
+
+            <div class="cards">
+                <div class="card">
+                    <img src="https://via.placeholder.com/320x220/111133/00ffea?text=Abraham" alt="Abraham">
+                    <p>Abraham Programador</p>
+                </div>
+                <div class="card">
+                    <img src="https://via.placeholder.com/320x220/221133/ff00ff?text=Jesus23" alt="Jesus23">
+                    <p>Creador Jesus23</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mods">
+            <h2>Mods Disponibles</h2>
+            <p>Aquí aparecerán los mods para descargar con descripciones, versiones compatibles y botones de descarga.</p>
+            <p>(Sección en desarrollo - pronto se agregarán los primeros mods RPG épicos)</p>
+        </section>
+
+        <section id="contacto">
+            <h2>Contacto</h2>
+            <p>¿Ideas? ¿Reportes? ¿Colaboraciones? Escríbenos.</p>
+            <p>(Formulario o enlaces a Discord/Twitter se agregarán aquí)</p>
+        </section>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+
+            // Mostrar la seleccionada
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active');
+            }
+
+            // Cerrar menú en móvil
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+
+            // Scroll suave al inicio de la sección
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        // Mostrar inicio al cargar
+        window.addEventListener('load', () => {
+            showSection('inicio');
+        });
+    </script>
+</body>
+</html>
