@@ -30,21 +30,17 @@
             height: 100%;
             object-fit: cover;
             z-index: -2;
-            opacity: 0.25; /* Ajusta opacidad para que no opaque el contenido */
+            opacity: 0.45;
         }
 
-        /* Overlay oscuro para mejorar legibilidad */
         .overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 20, 0.75);
+            inset: 0;
+            background: rgba(10, 10, 20, 0.65);
             z-index: -1;
         }
 
-        /* Luces RPG en bordes */
+        /* Luces de borde */
         body::before {
             content: '';
             position: fixed;
@@ -76,18 +72,10 @@
             box-shadow: 5px 0 25px rgba(0, 255, 234, 0.4);
         }
 
-        .sidebar.open {
-            left: 0;
-        }
+        .sidebar.open { left: 0; }
 
-        .sidebar ul {
-            list-style: none;
-        }
-
-        .sidebar li {
-            margin: 25px 0;
-        }
-
+        .sidebar ul { list-style: none; }
+        .sidebar li { margin: 25px 0; }
         .sidebar a {
             color: #00ffea;
             text-decoration: none;
@@ -95,14 +83,13 @@
             transition: all 0.3s;
             display: block;
         }
-
         .sidebar a:hover {
             color: #ff00ff;
             transform: translateX(10px);
             text-shadow: 0 0 10px #ff00ff;
         }
 
-        /* Botón menú */
+        /* Botón menú hamburguesa */
         .menu-toggle {
             position: fixed;
             top: 20px;
@@ -126,9 +113,41 @@
             box-shadow: 0 0 25px rgba(255, 0, 255, 0.7);
         }
 
+        /* Botón de control de video (esquina inferior derecha) */
+        #video-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            border: 1px solid #00ffea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(0, 255, 234, 0.5);
+        }
+
+        #video-controls:hover {
+            transform: scale(1.1);
+            background: rgba(255, 0, 255, 0.3);
+            border-color: #ff00ff;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.6);
+        }
+
+        #video-controls span {
+            font-size: 1.6em;
+            color: #00ffea;
+        }
+
         /* Contenido principal */
         main {
-            padding: 80px 20px 40px;
+            padding: 80px 20px 100px; /* espacio extra abajo por el botón */
             max-width: 1300px;
             margin: 0 auto;
             position: relative;
@@ -139,7 +158,7 @@
             display: none;
             opacity: 0;
             transform: translateY(30px);
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            transition: opacity 0.7s ease, transform 0.7s ease;
             padding: 30px;
             background: rgba(30, 30, 50, 0.4);
             border-radius: 16px;
@@ -160,23 +179,13 @@
             margin-bottom: 25px;
         }
 
-        h1 {
-            font-size: 2.8em;
-            color: #00ffea;
-            text-shadow: 0 0 20px #00ffea, 0 0 40px #0099ff;
-        }
+        h1 { font-size: 2.8em; color: #00ffea; text-shadow: 0 0 20px #00ffea, 0 0 40px #0099ff; }
+        h2 { font-size: 2em; color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
 
-        h2 {
-            font-size: 2em;
-            color: #ff00ff;
-            text-shadow: 0 0 15px #ff00ff;
-        }
+        p { font-size: 1.15em; line-height: 1.7; margin-bottom: 20px; }
 
-        p {
-            font-size: 1.15em;
-            line-height: 1.7;
-            margin-bottom: 20px;
-        }
+        a { color: #00ffea; text-decoration: none; }
+        a:hover { color: #ff00ff; text-decoration: underline; }
 
         /* Tarjetas */
         .cards {
@@ -223,24 +232,27 @@
         @media (max-width: 768px) {
             .sidebar { width: 240px; left: -240px; }
             .menu-toggle { top: 15px; left: 15px; padding: 10px 14px; font-size: 0.8em; }
-            main { padding: 70px 15px 30px; }
+            main { padding: 70px 15px 90px; }
             h1 { font-size: 2.2em; }
             .card { width: 100%; max-width: 360px; }
+            #video-controls { bottom: 15px; right: 15px; width: 44px; height: 44px; }
+            #video-controls span { font-size: 1.4em; }
         }
     </style>
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="bg-video">
-        <!-- Puedes reemplazar esta URL con tu video o uno de los sitios encontrados (Vecteezy, Pixabay, YouTube → descargar) -->
-        <!-- Ejemplo placeholder: cyberpunk neon loop -->
+    <video id="bg-video" loop playsinline>
         <source src="https://files.catbox.moe/ghaf0f.mp4" type="video/mp4">
-        <!-- Alternativa recomendada (descarga uno gratuito de vecteezy o pixabay y súbelo): -->
-        <!-- <source src="TU_VIDEO_CYBERPUNK_NEON_LOOP.mp4" type="video/mp4"> -->
         Tu navegador no soporta video de fondo.
     </video>
 
     <div class="overlay"></div>
+
+    <!-- Botón de control de video -->
+    <div id="video-controls" onclick="toggleVideo()">
+        <span id="playIcon">▶</span>
+    </div>
 
     <button class="menu-toggle" onclick="toggleMenu()">MENÚ</button>
 
@@ -261,8 +273,12 @@
 
             <div class="cards">
                 <div class="card">
-                    <img src="https://via.placeholder.com/320x220/111133/00ffea?text=Abraham" alt="Abraham">
+                    <img src="https://files.catbox.moe/qsi7pk.jpg" alt="Abraham Programador">
                     <p>Abraham Programador</p>
+                </div>
+                <div class="card">
+                    <img src="https://files.catbox.moe/sxa17r.jpg" alt="Bof">
+                    <p>Bof</p>
                 </div>
                 <div class="card">
                     <img src="https://via.placeholder.com/320x220/221133/ff00ff?text=Jesus23" alt="Jesus23">
@@ -280,39 +296,63 @@
         <section id="contacto">
             <h2>Contacto</h2>
             <p>¿Ideas? ¿Reportes? ¿Colaboraciones? Escríbenos.</p>
-            <p>(Formulario o enlaces a Discord/Twitter se agregarán aquí)</p>
+            <p style="text-align: center; margin-top: 30px; font-size: 1.3em;">
+                📧 <a href="mailto:proabraham887@gmail.com">proabraham887@gmail.com</a>
+            </p>
+            <p style="text-align: center; font-size: 0.95em; margin-top: 10px; opacity: 0.8;">
+                Respondo lo más rápido posible :)
+            </p>
         </section>
     </main>
 
     <script>
+        const video = document.getElementById('bg-video');
+        const playIcon = document.getElementById('playIcon');
+
+        // Intentar autoplay al cargar
+        video.play().catch(() => {
+            // Si falla autoplay (muy común), mostramos el botón listo para play
+            playIcon.textContent = '▶';
+        });
+
+        function toggleVideo() {
+            if (video.paused) {
+                video.play();
+                playIcon.textContent = '❚❚'; // pause symbol
+            } else {
+                video.pause();
+                playIcon.textContent = '▶';
+            }
+        }
+
+        // Opcional: doble clic en video para mute/unmute
+        video.addEventListener('dblclick', () => {
+            video.muted = !video.muted;
+        });
+
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('open');
         }
 
         function showSection(sectionId) {
-            // Ocultar todas las secciones
             document.querySelectorAll('section').forEach(sec => {
                 sec.classList.remove('active');
             });
 
-            // Mostrar la seleccionada
             const target = document.getElementById(sectionId);
             if (target) {
                 target.classList.add('active');
             }
 
-            // Cerrar menú en móvil
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('open');
             }
 
-            // Scroll suave al inicio de la sección
             setTimeout(() => {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+            }, 150);
         }
 
-        // Mostrar inicio al cargar
         window.addEventListener('load', () => {
             showSection('inicio');
         });
